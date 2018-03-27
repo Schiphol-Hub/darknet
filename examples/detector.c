@@ -576,6 +576,7 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
     double time;
     char buff[256];
     char *input = buff;
+    char file_id[100];
     int j;
     float nms=.3;
     while(1){
@@ -586,7 +587,9 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
             fflush(stdout);
             input = fgets(input, 256, stdin);
             if(!input) return;
+	    printf("%s\n", input);
             strtok(input, "\n");
+	    printf("%s\n", input);
         }
         image im = load_image_color(input,0,0);
         image sized = letterbox_image(im, net->w, net->h);
@@ -614,9 +617,16 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         if (nms) do_nms_sort(boxes, probs, l.w*l.h*l.n, l.classes, nms);
 
         FILE *fp;
-        const char* bbox_specs = "bbox_specs.txt";
+	char *last = strrchr(input, '/');
+	if (last != NULL) {
+	    strcpy(file_id, last+1);
+	}
+        char tmp[100];
+        strcpy(tmp, "output/predictions_");
+        char* bbox_specs = strcat(tmp, file_id); 
         fclose(fopen(bbox_specs, "w"));
         fp = fopen(bbox_specs, "a");
+
         draw_detections_custom(im, l.w*l.h*l.n, thresh, boxes, probs, masks, names, alphabet, l.classes, fp);
         fclose(fp);
 
