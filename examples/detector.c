@@ -630,6 +630,10 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         draw_detections_custom(im, l.w*l.h*l.n, thresh, boxes, probs, masks, names, alphabet, l.classes, fp);
         fclose(fp);
 
+
+        strcpy(tmp, "predictions/predictions_");
+        char* outfile_name = strcat(tmp, file_id); 
+        save_image(im, outfile_name);
         if(outfile){
             printf("%s\n", outfile);
             save_image(im, outfile);
